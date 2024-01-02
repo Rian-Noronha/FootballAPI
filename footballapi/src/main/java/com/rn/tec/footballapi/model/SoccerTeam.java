@@ -27,6 +27,7 @@ public class SoccerTeam {
 	private BigDecimal evaluated;
 	
 	@OneToMany(mappedBy = "soccerTeamPlayer")
+	@JsonManagedReference
 	private List<SoccerPlayer> soccerPlayers;
 	
 	@OneToMany(mappedBy = "soccerTeamFan")

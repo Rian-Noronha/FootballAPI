@@ -6,13 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.rn.tec.footballapi.model.SoccerPlayer;
+import com.rn.tec.footballapi.model.SoccerTeam;
+import com.rn.tec.footballapi.model.dto.SoccerPlayerTeamDTO;
 import com.rn.tec.footballapi.repository.SoccerPlayerRepository;
+import com.rn.tec.footballapi.repository.SoccerTeamRepository;
 
 @Service
 public class SoccerPlayerService {
 	
 	@Autowired
 	private SoccerPlayerRepository soccerPlayerRepository;
+	
+	@Autowired
+	private SoccerTeamRepository soccerTeamRepository;
 	
 	
 	public SoccerPlayer include(SoccerPlayer soccerPlayer) {
@@ -29,6 +35,26 @@ public class SoccerPlayerService {
 		return soccerPlayerRepository.findAll();
 	}
 	
+	public SoccerPlayerTeamDTO list(Long playerId) {
+		
+		SoccerPlayerTeamDTO soccerPlayerTeamDTO = new SoccerPlayerTeamDTO();
+		//aplicar regras de negócio
+		//1. Preenchimento de campos obrigatórios
+		
+		SoccerPlayer soccerPlayer = this.soccerPlayerRepository.findById(playerId)
+				.orElseThrow(() -> new RuntimeException("Soccer player not found"));
+		
+		soccerPlayerTeamDTO.setPlayerName(soccerPlayer.getName());
+		soccerPlayerTeamDTO.setPlayerImage(soccerPlayer.getImage());
+		
+		SoccerTeam soccerTeam = soccerPlayer.getSoccerTeamPlayer();
+		
+		soccerPlayerTeamDTO.setTeamName(soccerTeam.getName());
+		soccerPlayerTeamDTO.setTeamLogo(soccerTeam.getLogo());
+		
+		return soccerPlayerTeamDTO;
+	}
+	
 	public void exclude(Long id) {
 		if(id == null || id == 0L) {
 			throw new RuntimeException("Soccer Player ID doesn't exist");
@@ -40,6 +66,8 @@ public class SoccerPlayerService {
 		
 		this.soccerPlayerRepository.deleteById(id);
 	}
+	
+	
 	
 	public SoccerPlayer alter(SoccerPlayer soccerPlayer) {
 		//aplicar regras de negócio

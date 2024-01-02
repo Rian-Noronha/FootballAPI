@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rn.tec.footballapi.model.SoccerPlayer;
+import com.rn.tec.footballapi.model.dto.SoccerPlayerTeamDTO;
 import com.rn.tec.footballapi.service.SoccerPlayerService;
 
 @RestController
@@ -28,6 +29,12 @@ public class SoccerPlayerAPI {
 	@ResponseStatus(HttpStatus.OK)
 	public List<SoccerPlayer> listSoccerPlayers() {
 		return this.soccerPlayerService.list();
+	}
+	
+	@GetMapping("/soccerplayerteam/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public SoccerPlayerTeamDTO listSoccerPlayerTeamDTO(@PathVariable Long id) {
+		return this.soccerPlayerService.list(id);
 	}
 
 	@DeleteMapping("/soccerplayer/{id}")

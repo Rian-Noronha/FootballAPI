@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.rn.tec.footballapi.model.SoccerFan;
 import com.rn.tec.footballapi.model.SoccerTeam;
+import com.rn.tec.footballapi.model.dto.SoccerFanTeamDTO;
 import com.rn.tec.footballapi.repository.SoccerFanRepository;
 import com.rn.tec.footballapi.repository.SoccerTeamRepository;
 
@@ -35,6 +36,25 @@ public class SoccerFanService {
 	public List<SoccerFan> list(){
 		return soccerFanRepository.findAll();
 	}
+	
+	public SoccerFanTeamDTO list(Long fanId) {
+		SoccerFanTeamDTO soccerFanTeamDTO = new SoccerFanTeamDTO();
+		
+		SoccerFan soccerFan = this.soccerFanRepository.findById(fanId)
+				.orElseThrow(() -> new RuntimeException("Soccer fan not found")); 
+		
+		SoccerTeam soccerTeam = soccerFan.getSoccerTeamFan();
+		
+		soccerFanTeamDTO.setFanName(soccerFan.getName());
+		soccerFanTeamDTO.setFanEmail(soccerFan.getEmail());
+		soccerFanTeamDTO.setTeamName(soccerTeam.getName());
+		soccerFanTeamDTO.setTeamLogo(soccerTeam.getLogo());
+		
+		
+		return soccerFanTeamDTO;
+		
+		
+	}	
 	
 	public void exclude(Long id) {
 		if(id == null || id == 0L) {
