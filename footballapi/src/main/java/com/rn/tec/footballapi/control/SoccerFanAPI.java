@@ -33,6 +33,13 @@ public class SoccerFanAPI {
 		return this.soccerFanService.list();
 	}
 	
+	@GetMapping("/soccerfan/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public SoccerFan findSoccerFan(@PathVariable Long id) {
+		return this.soccerFanService.find(id);
+	}
+	
+	
 	@GetMapping("/soccerfanteam/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public SoccerFanTeamDTO listSoccerFanTeam(@PathVariable Long id) {
@@ -47,8 +54,8 @@ public class SoccerFanAPI {
 
 	@PostMapping("/soccerfan")
 	@ResponseStatus(HttpStatus.CREATED)
-	public SoccerFan includeSoccerFan(@RequestBody SoccerFan soccerFan) {
-		return this.soccerFanService.include(soccerFan);
+	public void includeSoccerFan(@RequestBody SoccerFan soccerFan) {
+		this.soccerFanService.include(soccerFan);
 	}
 
 	@PutMapping("/soccerfan/{id}")

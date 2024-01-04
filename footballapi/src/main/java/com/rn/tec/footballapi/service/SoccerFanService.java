@@ -1,7 +1,7 @@
 package com.rn.tec.footballapi.service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,9 @@ import com.rn.tec.footballapi.model.SoccerFan;
 import com.rn.tec.footballapi.model.SoccerTeam;
 import com.rn.tec.footballapi.model.dto.SoccerFanTeamDTO;
 import com.rn.tec.footballapi.repository.SoccerFanRepository;
-import com.rn.tec.footballapi.repository.SoccerTeamRepository;
+import jakarta.mail.internet.InternetAddress;
+
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -19,15 +21,24 @@ public class SoccerFanService {
 	@Autowired
 	private SoccerFanRepository soccerFanRepository;
 	
-	@Autowired
-	private SoccerTeamRepository soccerTeamRepository;
-	
-	public SoccerFan include(SoccerFan soccerFan) {
-	    // Aplicar regras de negócio
-	    // 1. Preenchimento de campos obrigatórios
+	public void include(SoccerFan soccerFan) {
+	    
+	    if(soccerFan == null) {
+	    	throw new RuntimeException("Soccer fan is null");
+	    }
+	    
 	    soccerFan.setId(null);
-
-	    return soccerFanRepository.save(soccerFan);
+	    checkFields(soccerFan);
+	    validateEmail(soccerFan.getEmail());
+	    
+	    if(soccerFanRepository.findByEmail(soccerFan.getEmail()).isPresent()) {
+	    	throw new RuntimeException("Email already cadastre");
+	    }
+	    
+	    
+	    soccerFanRepository.save(soccerFan);
+	    
+		
 	}
 
 
@@ -35,6 +46,10 @@ public class SoccerFanService {
 	
 	public List<SoccerFan> list(){
 		return soccerFanRepository.findAll();
+	}
+	
+	public SoccerFan find(Long id) {
+		return soccerFanRepository.findById(id).orElseThrow(() -> new RuntimeException("The soccer fan with this ID doesn't exist: " + id)); 
 	}
 	
 	public SoccerFanTeamDTO list(Long fanId) {
@@ -69,14 +84,19 @@ public class SoccerFanService {
 	}
 	
 	public SoccerFan alter(SoccerFan soccerFan) {
-		//aplicar regras de negócio
 		
-		//0. verificar se existe
-		//1. preechimento dos campos obrigatórios
 		
-		if(soccerFan == null) {
-			throw new RuntimeException("Inform the soccer fan datas.");
-		}
+		validateEmail(soccerFan.getEmail());
+		
+		checkFields(soccerFan);
+		
+		if(soccerFanRepository.findByEmail(soccerFan.getEmail()).isPresent()) {
+	    	throw new RuntimeException("Email already cadastre");
+	    }
+		
+		SoccerFan fan = soccerFanRepository.findByEmail(soccerFan.getEmail()).get();
+		
+		soccerFan.setId(fan.getId());
 		
 		if(soccerFan.getId() == null || soccerFan.getId() == 0L) {
 			throw new RuntimeException("Inform the soccer fan identifier");
@@ -86,10 +106,32 @@ public class SoccerFanService {
 			throw new RuntimeException("The soccer fan with this ID doesn't exist: " + soccerFan.getId());
 		}
 		
+		
+		
 		return this.soccerFanRepository.save(soccerFan);
 		
 	}
 	
+	
+	private void checkFields(SoccerFan soccerFan) {
+		if(!StringUtils.hasLength(soccerFan.getName()) || !StringUtils.hasLength(soccerFan.getEmail())
+				
+				|| soccerFan.getSoccerTeamFan() == null
+				) {
+			throw new RuntimeException("Fill in all fields");
+		}
+	}
+	
+	private void validateEmail(String email) {
+		
+		try {
+			InternetAddress emailAddress = new InternetAddress(email);
+			emailAddress.validate();
+		}catch(Exception e) {
+			throw new RuntimeException("Invalid email");
+		}
+		
+	}
 	
 	
 }
