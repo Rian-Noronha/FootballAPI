@@ -30,7 +30,13 @@ public class SoccerPlayerAPI {
 	public List<SoccerPlayer> listSoccerPlayers() {
 		return this.soccerPlayerService.list();
 	}
-	
+
+	@GetMapping("/soccerplayer/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public SoccerPlayer findSoccerPlayer(@PathVariable Long id) {
+		return this.soccerPlayerService.find(id);
+	}
+
 	@GetMapping("/soccerplayerteam/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public SoccerPlayerTeamDTO listSoccerPlayerTeamDTO(@PathVariable Long id) {

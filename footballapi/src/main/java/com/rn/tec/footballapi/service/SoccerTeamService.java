@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.rn.tec.footballapi.model.SoccerPlayer;
 import com.rn.tec.footballapi.model.SoccerTeam;
 import com.rn.tec.footballapi.repository.SoccerTeamRepository;
 
